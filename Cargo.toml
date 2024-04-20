@@ -10,8 +10,10 @@ repository = "https://github.com/rust-osdev/volatile"
 edition = "2021"
 
 [dependencies]
+volatile-macro = { version = "=0.5.2", optional = true, path = "volatile-macro" }
 
 [features]
+derive = ["dep:volatile-macro"]
 # Enable unstable features; requires Rust nightly; might break on compiler updates
 unstable = []
 # Enable unstable and experimental features; requires Rust nightly; might break on compiler updates
@@ -28,3 +30,6 @@ pre-release-commit-message = "Release version {{version}}"
 
 [package.metadata.docs.rs]
 features = ["unstable"]
+
+[workspace]
+members = ["volatile-macro"]
