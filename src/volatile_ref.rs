@@ -226,7 +226,6 @@ where
     ///
     /// ```
     /// use volatile::VolatileRef;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value: i16 = -4;
     /// let mut volatile = VolatileRef::from_mut_ref(&mut value);
@@ -247,7 +246,6 @@ where
     ///
     /// ```
     /// use volatile::{VolatileRef};
-    /// use core::ptr::NonNull;
     ///
     /// #[derive(Clone, Copy)]
     /// struct Example { field_1: u32, field_2: u8, }

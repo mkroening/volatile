@@ -6,7 +6,6 @@
 ///
 /// ```
 /// use volatile::{VolatilePtr, map_field};
-/// use core::ptr::NonNull;
 ///
 /// struct Example { field_1: u32, field_2: u8, }
 /// let mut value = Example { field_1: 15, field_2: 255 };
@@ -20,7 +19,6 @@
 /// Creating `VolatilePtr`s to unaligned field in packed structs is not allowed:
 /// ```compile_fail
 /// use volatile::{VolatilePtr, map_field};
-/// use core::ptr::NonNull;
 ///
 /// #[repr(packed)]
 /// struct Example { field_1: u8, field_2: usize, }

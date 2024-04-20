@@ -100,7 +100,6 @@ where
     ///
     /// ```rust
     /// use volatile::VolatilePtr;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value = 42;
     /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
@@ -124,7 +123,6 @@ where
     ///
     /// ```rust
     /// use volatile::VolatilePtr;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value = 42;
     /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
@@ -148,7 +146,6 @@ where
     ///
     /// ```
     /// use volatile::VolatilePtr;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value = 42;
     /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
@@ -188,7 +185,6 @@ where
     ///
     /// ```
     /// use volatile::VolatilePtr;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value = 5;
     /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
@@ -247,7 +243,6 @@ where
     ///
     /// ```
     /// use volatile::VolatilePtr;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value: i16 = -4;
     /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
@@ -268,7 +263,6 @@ where
     ///
     /// ```
     /// use volatile::{VolatilePtr, map_field};
-    /// use core::ptr::NonNull;
     ///
     /// struct Example { field_1: u32, field_2: u8, }
     /// let mut value = Example { field_1: 15, field_2: 255 };
