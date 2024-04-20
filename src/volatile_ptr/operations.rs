@@ -219,6 +219,28 @@ impl<'a, T> VolatilePtr<'a, T, ReadWrite>
 where
     T: ?Sized,
 {
+    /// Restricts access permissions to `A`.
+    ///
+    /// ## Example
+    ///
+    /// ```
+    /// use volatile::access::ReadOnly;
+    /// use volatile::VolatilePtr;
+    ///
+    /// let mut value: i16 = -4;
+    /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+    ///
+    /// let read_only = volatile.restrict::<ReadOnly>();
+    /// assert_eq!(read_only.read(), -4);
+    /// // read_only.write(10); // compile-time error
+    /// ```
+    pub fn restrict<A>(self) -> VolatilePtr<'a, T, A>
+    where
+        A: Access,
+    {
+        unsafe { VolatilePtr::new_restricted(Default::default(), self.pointer) }
+    }
+
     /// Restricts access permissions to read-only.
     ///
     /// ## Example
@@ -235,7 +257,7 @@ where
     /// // read_only.write(10); // compile-time error
     /// ```
     pub fn read_only(self) -> VolatilePtr<'a, T, ReadOnly> {
-        unsafe { VolatilePtr::new_restricted(ReadOnly, self.pointer) }
+        self.restrict()
     }
 
     /// Restricts access permissions to write-only.
@@ -258,6 +280,6 @@ where
     /// // field_2.read(); // compile-time error
     /// ```
     pub fn write_only(self) -> VolatilePtr<'a, T, WriteOnly> {
-        unsafe { VolatilePtr::new_restricted(WriteOnly, self.pointer) }
+        self.restrict()
     }
 }
