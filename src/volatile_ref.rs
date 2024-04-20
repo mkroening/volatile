@@ -207,7 +207,7 @@ where
     /// use volatile::VolatileRef;
     ///
     /// let mut value: i16 = -4;
-    /// let mut volatile = VolatileRef::from_mut_ref(&mut value);
+    /// let volatile = VolatileRef::from_mut_ref(&mut value);
     ///
     /// let read_only = volatile.restrict::<ReadOnly>();
     /// assert_eq!(read_only.as_ptr().read(), -4);
@@ -228,7 +228,7 @@ where
     /// use volatile::VolatileRef;
     ///
     /// let mut value: i16 = -4;
-    /// let mut volatile = VolatileRef::from_mut_ref(&mut value);
+    /// let volatile = VolatileRef::from_mut_ref(&mut value);
     ///
     /// let read_only = volatile.read_only();
     /// assert_eq!(read_only.as_ptr().read(), -4);
@@ -250,7 +250,7 @@ where
     /// #[derive(Clone, Copy)]
     /// struct Example { field_1: u32, field_2: u8, }
     /// let mut value = Example { field_1: 15, field_2: 255 };
-    /// let mut volatile = VolatileRef::from_mut_ref(&mut value);
+    /// let volatile = VolatileRef::from_mut_ref(&mut value);
     ///
     /// let write_only = volatile.write_only();
     /// // write_only.as_ptr().read(); // compile-time error

@@ -9,7 +9,7 @@
 ///
 /// struct Example { field_1: u32, field_2: u8, }
 /// let mut value = Example { field_1: 15, field_2: 255 };
-/// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+/// let volatile = unsafe { VolatilePtr::new((&mut value).into()) };
 ///
 /// // construct a volatile reference to a field
 /// let field_2 = map_field!(volatile.field_2);
@@ -23,7 +23,7 @@
 /// #[repr(packed)]
 /// struct Example { field_1: u8, field_2: usize, }
 /// let mut value = Example { field_1: 15, field_2: 255 };
-/// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+/// let volatile = unsafe { VolatilePtr::new((&mut value).into()) };
 ///
 /// // Constructing a volatile reference to an unaligned field doesn't compile.
 /// let field_2 = map_field!(volatile.field_2);
