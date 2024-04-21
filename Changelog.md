@@ -1,6 +1,11 @@
 # Unreleased
 
-- Add `VolatileRef::borrow` and `VolatileRef::borrow_mut`
+* Add `#[derive(Volatile)]` for easy, access-limited field-based access to structs by @mkroening in https://github.com/rust-osdev/volatile/pull/49
+* Add `VolatileRef::restrict` and `VolatilePtr::restrict` by @mkroening in https://github.com/rust-osdev/volatile/pull/47
+* Add `VolatileRef::borrow` and `VolatileRef::borrow_mut` by @mkroening in https://github.com/rust-osdev/volatile/pull/46
+* Add support for nested `map_field` operations by @phil-opp in https://github.com/rust-osdev/volatile/pull/50
+* docs: remove unused `NonNull` imports by @mkroening in https://github.com/rust-osdev/volatile/pull/48
+* fix(Cargo.toml): add categories by @mkroening in https://github.com/rust-osdev/volatile/pull/52
 
 # 0.5.2 – 2024-03-22
 
