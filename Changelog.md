@@ -1,5 +1,7 @@
 # Unreleased
 
+# 0.5.3 – 2024-04-21
+
 * Add `#[derive(VolatileFieldAccess)]` for easy, access-limited field-based access to structs by @mkroening in https://github.com/rust-osdev/volatile/pull/49
 * Add `VolatileRef::restrict` and `VolatilePtr::restrict` by @mkroening in https://github.com/rust-osdev/volatile/pull/47
 * Add `VolatileRef::borrow` and `VolatileRef::borrow_mut` by @mkroening in https://github.com/rust-osdev/volatile/pull/46
