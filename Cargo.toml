@@ -1,6 +1,6 @@
 [package]
 name = "volatile"
-version = "0.5.2"
+version = "0.5.3"
 authors = ["Philipp Oppermann <dev@phil-opp.com>"]
 license = "MIT OR Apache-2.0"
 keywords = ["volatile"]
@@ -11,7 +11,7 @@ repository = "https://github.com/rust-osdev/volatile"
 edition = "2021"
 
 [dependencies]
-volatile-macro = { version = "=0.5.2", optional = true, path = "volatile-macro" }
+volatile-macro = { version = "=0.5.3", optional = true, path = "volatile-macro" }
 
 [features]
 derive = ["dep:volatile-macro"]
