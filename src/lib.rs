@@ -41,6 +41,9 @@
 #![cfg_attr(feature = "very_unstable", feature(effects))]
 #![warn(missing_docs)]
 #![deny(unsafe_op_in_unsafe_fn)]
+#![doc(test(attr(deny(warnings))))]
+#![doc(test(attr(allow(dead_code))))]
+#![doc(test(attr(allow(unused_variables))))]
 
 pub use volatile_ptr::VolatilePtr;
 pub use volatile_ref::VolatileRef;

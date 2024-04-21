@@ -100,10 +100,9 @@ where
     ///
     /// ```rust
     /// use volatile::VolatilePtr;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value = 42;
-    /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+    /// let volatile = unsafe { VolatilePtr::new((&mut value).into()) };
     /// volatile.write(50);
     ///
     /// assert_eq!(volatile.read(), 50);
@@ -124,10 +123,9 @@ where
     ///
     /// ```rust
     /// use volatile::VolatilePtr;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value = 42;
-    /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+    /// let volatile = unsafe { VolatilePtr::new((&mut value).into()) };
     /// volatile.update(|val| val + 1);
     ///
     /// assert_eq!(volatile.read(), 43);
@@ -148,10 +146,9 @@ where
     ///
     /// ```
     /// use volatile::VolatilePtr;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value = 42;
-    /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+    /// let volatile = unsafe { VolatilePtr::new((&mut value).into()) };
     /// volatile.write(50);
     /// let unwrapped: *mut i32 = volatile.as_raw_ptr().as_ptr();
     ///
@@ -177,7 +174,7 @@ where
     ///
     /// struct Example { field_1: u32, field_2: u8, }
     /// let mut value = Example { field_1: 15, field_2: 255 };
-    /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+    /// let volatile = unsafe { VolatilePtr::new((&mut value).into()) };
     ///
     /// // construct a volatile pointer to a field
     /// let field_2 = unsafe { volatile.map(|ptr| NonNull::new(core::ptr::addr_of_mut!((*ptr.as_ptr()).field_2)).unwrap()) };
@@ -188,10 +185,9 @@ where
     ///
     /// ```
     /// use volatile::VolatilePtr;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value = 5;
-    /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+    /// let volatile = unsafe { VolatilePtr::new((&mut value).into()) };
     ///
     /// // DON'T DO THIS:
     /// let mut readout = 0;
@@ -228,7 +224,7 @@ where
     /// use volatile::VolatilePtr;
     ///
     /// let mut value: i16 = -4;
-    /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+    /// let volatile = unsafe { VolatilePtr::new((&mut value).into()) };
     ///
     /// let read_only = volatile.restrict::<ReadOnly>();
     /// assert_eq!(read_only.read(), -4);
@@ -247,10 +243,9 @@ where
     ///
     /// ```
     /// use volatile::VolatilePtr;
-    /// use core::ptr::NonNull;
     ///
     /// let mut value: i16 = -4;
-    /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+    /// let volatile = unsafe { VolatilePtr::new((&mut value).into()) };
     ///
     /// let read_only = volatile.read_only();
     /// assert_eq!(read_only.read(), -4);
@@ -268,14 +263,13 @@ where
     ///
     /// ```
     /// use volatile::{VolatilePtr, map_field};
-    /// use core::ptr::NonNull;
     ///
     /// struct Example { field_1: u32, field_2: u8, }
     /// let mut value = Example { field_1: 15, field_2: 255 };
-    /// let mut volatile = unsafe { VolatilePtr::new((&mut value).into()) };
+    /// let volatile = unsafe { VolatilePtr::new((&mut value).into()) };
     ///
     /// // construct a volatile write-only pointer to `field_2`
-    /// let mut field_2 = map_field!(volatile.field_2).write_only();
+    /// let field_2 = map_field!(volatile.field_2).write_only();
     /// field_2.write(14);
     /// // field_2.read(); // compile-time error
     /// ```
