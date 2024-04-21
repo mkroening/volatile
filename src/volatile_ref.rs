@@ -134,6 +134,30 @@ impl<'a, T, A> VolatileRef<'a, T, A>
 where
     T: ?Sized,
 {
+    /// Immutably borrows from this `VolatileRef`.
+    ///
+    /// This method creates a `VolatileRef` tied to the lifetime of the `&VolatileRef` it is created from.
+    /// This is useful for providing a volatile reference without moving the original `VolatileRef`.
+    /// In comparison with creating a `&VolatileRef<'a, T>`, this avoids the additional indirection and lifetime.
+    pub fn borrow(&self) -> VolatileRef<'_, T, A::RestrictShared>
+    where
+        A: Access,
+    {
+        unsafe { VolatileRef::new_restricted(Default::default(), self.pointer) }
+    }
+
+    /// Mutably borrows from this `VolatileRef`.
+    ///
+    /// This method creates a `VolatileRef` tied to the lifetime of the `&mut VolatileRef` it is created from.
+    /// This is useful for providing a volatile reference without moving the original `VolatileRef`.
+    /// In comparison with creating a `&mut VolatileRef<'a, T>`, this avoids the additional indirection and lifetime.
+    pub fn borrow_mut(&mut self) -> VolatileRef<'_, T, A>
+    where
+        A: Access,
+    {
+        unsafe { VolatileRef::new_restricted(Default::default(), self.pointer) }
+    }
+
     /// Borrows this `VolatileRef` as a read-only [`VolatilePtr`].
     ///
     /// Use this method to do (partial) volatile reads of the referenced data.

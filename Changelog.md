@@ -1,5 +1,7 @@
 # Unreleased
 
+- Add `VolatileRef::borrow` and `VolatileRef::borrow_mut`
+
 # 0.5.2 – 2024-03-22
 
 - Add implementations for `fmt::Pointer`, `PartialEq`, `Eq`, `PartialOrd`, `Ord` and `Hash`.
