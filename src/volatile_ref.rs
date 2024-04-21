@@ -174,6 +174,28 @@ impl<'a, T> VolatileRef<'a, T, ReadWrite>
 where
     T: ?Sized,
 {
+    /// Restricts access permissions to `A`.
+    ///
+    /// ## Example
+    ///
+    /// ```
+    /// use volatile::access::ReadOnly;
+    /// use volatile::VolatileRef;
+    ///
+    /// let mut value: i16 = -4;
+    /// let mut volatile = VolatileRef::from_mut_ref(&mut value);
+    ///
+    /// let read_only = volatile.restrict::<ReadOnly>();
+    /// assert_eq!(read_only.as_ptr().read(), -4);
+    /// // read_only.as_ptr().write(10); // compile-time error
+    /// ```
+    pub fn restrict<A>(self) -> VolatileRef<'a, T, A>
+    where
+        A: Access,
+    {
+        unsafe { VolatileRef::new_restricted(Default::default(), self.pointer) }
+    }
+
     /// Restricts access permissions to read-only.
     ///
     /// ## Example
@@ -190,7 +212,7 @@ where
     /// // read_only.as_ptr().write(10); // compile-time error
     /// ```
     pub fn read_only(self) -> VolatileRef<'a, T, ReadOnly> {
-        unsafe { VolatileRef::new_restricted(ReadOnly, self.pointer) }
+        self.restrict()
     }
 
     /// Restricts access permissions to write-only.
@@ -212,7 +234,7 @@ where
     /// // write_only.as_ptr().read(); // compile-time error
     /// ```
     pub fn write_only(self) -> VolatileRef<'a, T, WriteOnly> {
-        unsafe { VolatileRef::new_restricted(WriteOnly, self.pointer) }
+        self.restrict()
     }
 }
 
