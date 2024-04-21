@@ -30,7 +30,8 @@ pre-release-replacements = [
 pre-release-commit-message = "Release version {{version}}"
 
 [package.metadata.docs.rs]
-features = ["unstable"]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
 
 [workspace]
 members = ["volatile-macro"]
