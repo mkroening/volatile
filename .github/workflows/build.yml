@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo check
+      - run: cargo check --workspace
 
   test:
     name: Test Suite
@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo test
+      - run: cargo test --workspace
 
   unstable:
     name: Test Suite (unstable)
@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
-      - run: cargo test --features unstable
+      - run: cargo test --workspace --features unstable
 
   very_unstable:
     name: Test Suite (very_unstable)
@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
-      - run: cargo test --features very_unstable
+      - run: cargo test --workspace --features very_unstable
 
   lints:
     name: Lints
@@ -47,4 +47,4 @@ jobs:
         with:
           components: clippy, rustfmt
       - run: cargo fmt --all --check
-      - run: cargo clippy
+      - run: cargo clippy --workspace
