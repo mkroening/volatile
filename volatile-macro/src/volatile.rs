@@ -1,7 +1,8 @@
 use quote::format_ident;
+use syn::punctuated::Punctuated;
 use syn::{
-    parse_quote, Attribute, Fields, Ident, Item, ItemImpl, ItemStruct, ItemTrait, Path, Result,
-    Signature, Visibility,
+    parse_quote, Attribute, Fields, Ident, Item, ItemImpl, ItemStruct, ItemTrait, Meta, Path,
+    Result, Signature, Token, Visibility,
 };
 
 fn validate_input(input: &ItemStruct) -> Result<()> {
@@ -22,9 +23,13 @@ fn validate_input(input: &ItemStruct) -> Result<()> {
     let mut valid_repr = false;
     for attr in &input.attrs {
         if attr.path().is_ident("repr") {
-            let ident = attr.parse_args::<Ident>()?;
-            if ident == "C" || ident == "transparent" {
-                valid_repr = true;
+            let nested = attr.parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated)?;
+            for meta in nested {
+                if let Meta::Path(path) = meta {
+                    if path.is_ident("C") || path.is_ident("transparent") {
+                        valid_repr = true;
+                    }
+                }
             }
         }
     }
@@ -199,6 +204,38 @@ mod tests {
                     ::volatile::map_field!(self.feature).restrict()
                 }
             }
+        };
+
+        assert_eq!(
+            expected_trait.to_string(),
+            result[0].to_token_stream().to_string()
+        );
+        assert_eq!(
+            expected_impl.to_string(),
+            result[1].to_token_stream().to_string()
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_align() -> Result<()> {
+        let input = parse_quote! {
+            #[repr(C, align(8))]
+            #[derive(VolatileFieldAccess)]
+            pub struct DeviceConfig {}
+        };
+
+        let result = derive_volatile(input)?;
+
+        let expected_trait = quote! {
+            #[allow(non_camel_case_types)]
+            pub trait DeviceConfigVolatileFieldAccess<'a> {}
+        };
+
+        let expected_impl = quote! {
+            #[automatically_derived]
+            impl<'a> DeviceConfigVolatileFieldAccess<'a> for ::volatile::VolatilePtr<'a, DeviceConfig, ::volatile::access::ReadWrite> {}
         };
 
         assert_eq!(
