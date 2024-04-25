@@ -64,6 +64,7 @@ pub trait Writable: Access + private::Sealed {}
 
 /// Implemented for access types that permit copying of `VolatileRef`.
 pub trait Copyable: private::Sealed {}
+impl<A: RestrictAccess<ReadOnly, Restricted = Self>> Copyable for A {}
 
 impl<T> Access for T
 where
@@ -87,7 +88,6 @@ pub struct ReadOnly;
 impl Readable for ReadOnly {
     type RestrictShared = ReadOnly;
 }
-impl Copyable for ReadOnly {}
 
 /// Zero-sized marker type for allowing only write access.
 #[derive(Debug, Default, Copy, Clone)]
@@ -103,7 +103,6 @@ pub struct NoAccess;
 impl Access for NoAccess {
     type RestrictShared = NoAccess;
 }
-impl Copyable for NoAccess {}
 
 mod private {
     pub trait Sealed {}
