@@ -70,21 +70,21 @@ impl<A: RestrictAccess<WriteOnly, Restricted = WriteOnly>> Writable for A {}
 pub trait Copyable: private::Sealed {}
 impl<A: RestrictAccess<ReadOnly, Restricted = Self>> Copyable for A {}
 
-impl<T> Access for T
-where
-    T: Readable + Default + Copy,
-{
-    #[allow(deprecated)]
-    type RestrictShared = <T as Readable>::RestrictShared;
-}
-
 /// Zero-sized marker type for allowing both read and write access.
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ReadWrite;
+impl Access for ReadWrite {
+    #[allow(deprecated)]
+    type RestrictShared = <Self as Readable>::RestrictShared;
+}
 
 /// Zero-sized marker type for allowing only read access.
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ReadOnly;
+impl Access for ReadOnly {
+    #[allow(deprecated)]
+    type RestrictShared = <Self as Readable>::RestrictShared;
+}
 
 /// Zero-sized marker type for allowing only write access.
 #[derive(Debug, Default, Copy, Clone)]
