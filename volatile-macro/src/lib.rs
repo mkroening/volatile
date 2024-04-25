@@ -52,6 +52,12 @@ mod volatile;
 ///
 /// // A real device might have changed the value, though.
 /// assert_eq!(volatile_ptr.feature().read(), 0);
+///
+/// // You can also use shared references.
+/// let volatile_ptr = volatile_ref.as_ptr();
+/// assert_eq!(volatile_ptr.feature_select().read(), 42);
+/// // This does not compile, because `volatile_ptr` is `ReadOnly`.
+/// // volatile_ptr.feature_select().write(42);
 /// ```
 ///
 /// # Details
@@ -65,21 +71,31 @@ mod volatile;
 /// #     feature_select: u32,
 /// #     feature: u32,
 /// # }
-/// use volatile::access::{ReadOnly, ReadWrite};
+/// use volatile::access::{ReadOnly, ReadWrite, RestrictAccess};
 /// use volatile::{map_field, VolatilePtr};
 ///
-/// pub trait DeviceConfigVolatileFieldAccess<'a> {
-///     fn feature_select(self) -> VolatilePtr<'a, u32, ReadWrite>;
+/// pub trait DeviceConfigVolatileFieldAccess<'a, A> {
+///     fn feature_select(self) -> VolatilePtr<'a, u32, A::Restricted>
+///     where
+///         A: RestrictAccess<ReadWrite>;
 ///
-///     fn feature(self) -> VolatilePtr<'a, u32, ReadOnly>;
+///     fn feature(self) -> VolatilePtr<'a, u32, A::Restricted>
+///     where
+///         A: RestrictAccess<ReadOnly>;
 /// }
 ///
-/// impl<'a> DeviceConfigVolatileFieldAccess<'a> for VolatilePtr<'a, DeviceConfig, ReadWrite> {
-///     fn feature_select(self) -> VolatilePtr<'a, u32, ReadWrite> {
+/// impl<'a, A> DeviceConfigVolatileFieldAccess<'a, A> for VolatilePtr<'a, DeviceConfig, A> {
+///     fn feature_select(self) -> VolatilePtr<'a, u32, A::Restricted>
+///     where
+///         A: RestrictAccess<ReadWrite>
+///     {
 ///         map_field!(self.feature_select).restrict()
 ///     }
 ///
-///     fn feature(self) -> VolatilePtr<'a, u32, ReadOnly> {
+///     fn feature(self) -> VolatilePtr<'a, u32, A::Restricted>
+///     where
+///         A: RestrictAccess<ReadOnly>
+///     {
 ///         map_field!(self.feature).restrict()
 ///     }
 /// }
