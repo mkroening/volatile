@@ -58,6 +58,9 @@ pub trait Readable: Copy + Default + private::Sealed {
     #[deprecated = "replaced by `RestrictAccess<ReadOnly>::Restricted`"]
     type RestrictShared: Readable + Access;
 }
+impl<A: RestrictAccess<ReadOnly, Restricted = ReadOnly>> Readable for A {
+    type RestrictShared = ReadOnly;
+}
 
 /// Helper trait that is implemented by [`ReadWrite`] and [`WriteOnly`].
 pub trait Writable: Access + private::Sealed {}
@@ -78,16 +81,10 @@ where
 /// Zero-sized marker type for allowing both read and write access.
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ReadWrite;
-impl Readable for ReadWrite {
-    type RestrictShared = ReadOnly;
-}
 
 /// Zero-sized marker type for allowing only read access.
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ReadOnly;
-impl Readable for ReadOnly {
-    type RestrictShared = ReadOnly;
-}
 
 /// Zero-sized marker type for allowing only write access.
 #[derive(Debug, Default, Copy, Clone)]
