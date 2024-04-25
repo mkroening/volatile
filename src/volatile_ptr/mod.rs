@@ -88,6 +88,7 @@ where
     T: ?Sized,
 {
     fn cmp(&self, other: &Self) -> Ordering {
+        #[allow(ambiguous_wide_pointer_comparisons)]
         Ord::cmp(&self.pointer.as_ptr(), &other.pointer.as_ptr())
     }
 }
