@@ -63,7 +63,7 @@
 ///
 /// ```
 /// use volatile::access::ReadOnly;
-/// use volatile::{VolatileFieldAccess, VolatilePtr, VolatileRef};
+/// use volatile::{VolatileFieldAccess, VolatileRef};
 ///
 /// #[repr(C)]
 /// #[derive(VolatileFieldAccess, Default)]
@@ -75,7 +75,7 @@
 ///
 /// let mut device_config = DeviceConfig::default();
 /// let mut volatile_ref = VolatileRef::from_mut_ref(&mut device_config);
-/// let mut volatile_ptr = volatile_ref.as_mut_ptr();
+/// let volatile_ptr = volatile_ref.as_mut_ptr();
 ///
 /// volatile_ptr.feature_select().write(42);
 /// assert_eq!(volatile_ptr.feature_select().read(), 42);
@@ -93,6 +93,14 @@
 /// The example above results in (roughly) the following code:
 ///
 /// ```
+/// # #[repr(C)]
+/// # pub struct DeviceConfig {
+/// #     feature_select: u32,
+/// #     feature: u32,
+/// # }
+/// use volatile::access::{ReadOnly, ReadWrite};
+/// use volatile::{map_field, VolatilePtr};
+///
 /// pub trait DeviceConfigVolatileFieldAccess<'a> {
 ///     fn feature_select(self) -> VolatilePtr<'a, u32, ReadWrite>;
 ///
