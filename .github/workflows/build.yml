@@ -5,6 +5,10 @@ name: Build
 permissions:
   contents: read
 
+env:
+  RUSTFLAGS: -Dwarnings
+  RUSTDOCFLAGS: -Dwarnings
+
 jobs:
   check:
     name: Check
