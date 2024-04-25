@@ -1,5 +1,50 @@
 //! Marker types for limiting access.
 
+/// A trait for restricting one [`Access`] type to another [`Access`] type.
+///
+/// Restricting `Self` to `To` results in [`Self::Restricted`].
+///
+/// Restriction is a symmetric operation which is denoted by ∩, as it is the intersection of permissions.
+/// The following table holds:
+///
+/// | `Self`        | `To`          | `Self` ∩ `To` |
+/// | ------------- | ------------- | ------------- |
+/// | `T`           | `T`           | `T`           |
+/// | [`ReadWrite`] | `T`           | `T`           |
+/// | [`NoAccess`]  | `T`           | [`NoAccess`]  |
+/// | [`ReadOnly`]  | [`WriteOnly`] | [`NoAccess`]  |
+pub trait RestrictAccess<To>: Access {
+    /// The resulting [`Access`] type of `Self` restricted to `To`.
+    type Restricted: Access;
+}
+
+impl<To: Access> RestrictAccess<To> for ReadWrite {
+    type Restricted = To;
+}
+
+impl<To> RestrictAccess<To> for NoAccess {
+    type Restricted = Self;
+}
+
+// Sadly, we cannot provide more generic implementations, since they would overlap.
+macro_rules! restrict_impl {
+    ($SelfT:ty, $To:ty, $Restricted:ty) => {
+        impl RestrictAccess<$To> for $SelfT {
+            type Restricted = $Restricted;
+        }
+    };
+}
+
+restrict_impl!(ReadOnly, ReadWrite, ReadOnly);
+restrict_impl!(ReadOnly, ReadOnly, ReadOnly);
+restrict_impl!(ReadOnly, WriteOnly, NoAccess);
+restrict_impl!(ReadOnly, NoAccess, NoAccess);
+
+restrict_impl!(WriteOnly, ReadWrite, WriteOnly);
+restrict_impl!(WriteOnly, ReadOnly, NoAccess);
+restrict_impl!(WriteOnly, WriteOnly, WriteOnly);
+restrict_impl!(WriteOnly, NoAccess, NoAccess);
+
 /// Sealed trait that is implemented for the types in this module.
 pub trait Access: Copy + Default + private::Sealed {
     /// Reduced access level to safely share the corresponding value.
