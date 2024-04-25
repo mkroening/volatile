@@ -139,9 +139,9 @@ where
     /// This method creates a `VolatileRef` tied to the lifetime of the `&VolatileRef` it is created from.
     /// This is useful for providing a volatile reference without moving the original `VolatileRef`.
     /// In comparison with creating a `&VolatileRef<'a, T>`, this avoids the additional indirection and lifetime.
-    pub fn borrow(&self) -> VolatileRef<'_, T, A::RestrictShared>
+    pub fn borrow(&self) -> VolatileRef<'_, T, A::Restricted>
     where
-        A: Access,
+        A: RestrictAccess<ReadOnly>,
     {
         unsafe { VolatileRef::new_restricted(Default::default(), self.pointer) }
     }
@@ -161,9 +161,9 @@ where
     /// Borrows this `VolatileRef` as a read-only [`VolatilePtr`].
     ///
     /// Use this method to do (partial) volatile reads of the referenced data.
-    pub fn as_ptr(&self) -> VolatilePtr<'_, T, A::RestrictShared>
+    pub fn as_ptr(&self) -> VolatilePtr<'_, T, A::Restricted>
     where
-        A: Access,
+        A: RestrictAccess<ReadOnly>,
     {
         unsafe { VolatilePtr::new_restricted(Default::default(), self.pointer) }
     }
