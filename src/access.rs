@@ -48,12 +48,14 @@ restrict_impl!(WriteOnly, NoAccess, NoAccess);
 /// Sealed trait that is implemented for the types in this module.
 pub trait Access: Copy + Default + private::Sealed {
     /// Reduced access level to safely share the corresponding value.
+    #[deprecated = "replaced by `RestrictAccess<ReadOnly>::Restricted`"]
     type RestrictShared: Access;
 }
 
 /// Helper trait that is implemented by [`ReadWrite`] and [`ReadOnly`].
 pub trait Readable: Copy + Default + private::Sealed {
     /// Reduced access level to safely share the corresponding value.
+    #[deprecated = "replaced by `RestrictAccess<ReadOnly>::Restricted`"]
     type RestrictShared: Readable + Access;
 }
 
@@ -67,6 +69,7 @@ impl<T> Access for T
 where
     T: Readable + Default + Copy,
 {
+    #[allow(deprecated)]
     type RestrictShared = <T as Readable>::RestrictShared;
 }
 
