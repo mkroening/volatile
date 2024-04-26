@@ -46,21 +46,11 @@ restrict_impl!(WriteOnly, WriteOnly, WriteOnly);
 restrict_impl!(WriteOnly, NoAccess, NoAccess);
 
 /// Sealed trait that is implemented for the types in this module.
-pub trait Access: Copy + Default + private::Sealed {
-    /// Reduced access level to safely share the corresponding value.
-    #[deprecated = "replaced by `RestrictAccess<ReadOnly>::Restricted`"]
-    type RestrictShared: Access;
-}
+pub trait Access: Copy + Default + private::Sealed {}
 
 /// Helper trait that is implemented by [`ReadWrite`] and [`ReadOnly`].
-pub trait Readable: Copy + Default + private::Sealed {
-    /// Reduced access level to safely share the corresponding value.
-    #[deprecated = "replaced by `RestrictAccess<ReadOnly>::Restricted`"]
-    type RestrictShared: Readable + Access;
-}
-impl<A: RestrictAccess<ReadOnly, Restricted = ReadOnly>> Readable for A {
-    type RestrictShared = <Self as RestrictAccess<ReadOnly>>::Restricted;
-}
+pub trait Readable: Copy + Default + private::Sealed {}
+impl<A: RestrictAccess<ReadOnly, Restricted = ReadOnly>> Readable for A {}
 
 /// Helper trait that is implemented by [`ReadWrite`] and [`WriteOnly`].
 pub trait Writable: Access + private::Sealed {}
@@ -73,30 +63,22 @@ impl<A: RestrictAccess<ReadOnly, Restricted = Self>> Copyable for A {}
 /// Zero-sized marker type for allowing both read and write access.
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ReadWrite;
-impl Access for ReadWrite {
-    type RestrictShared = <Self as RestrictAccess<ReadOnly>>::Restricted;
-}
+impl Access for ReadWrite {}
 
 /// Zero-sized marker type for allowing only read access.
 #[derive(Debug, Default, Copy, Clone)]
 pub struct ReadOnly;
-impl Access for ReadOnly {
-    type RestrictShared = <Self as RestrictAccess<ReadOnly>>::Restricted;
-}
+impl Access for ReadOnly {}
 
 /// Zero-sized marker type for allowing only write access.
 #[derive(Debug, Default, Copy, Clone)]
 pub struct WriteOnly;
-impl Access for WriteOnly {
-    type RestrictShared = <Self as RestrictAccess<ReadOnly>>::Restricted;
-}
+impl Access for WriteOnly {}
 
 /// Zero-sized marker type that grants no access.
 #[derive(Debug, Default, Copy, Clone)]
 pub struct NoAccess;
-impl Access for NoAccess {
-    type RestrictShared = <Self as RestrictAccess<ReadOnly>>::Restricted;
-}
+impl Access for NoAccess {}
 
 mod private {
     pub trait Sealed {}
