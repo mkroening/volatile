@@ -52,3 +52,16 @@ jobs:
           components: clippy, rustfmt
       - run: cargo fmt --all --check
       - run: cargo clippy --workspace --features derive
+
+  semver-checks:
+    name: Semver Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: "semver-checks"
+          cache-targets: false
+      - run: cargo install cargo-semver-checks --locked
+      - name: Check semver
+        run: cargo semver-checks check-release
