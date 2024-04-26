@@ -4,7 +4,7 @@ use core::{
 };
 
 use crate::{
-    access::{Access, ReadOnly, ReadWrite, Readable, Writable, WriteOnly},
+    access::{Access, ReadOnly, ReadWrite, Readable, RestrictAccess, Writable, WriteOnly},
     VolatilePtr,
 };
 
@@ -211,7 +211,7 @@ where
 }
 
 /// Methods for restricting access.
-impl<'a, T> VolatilePtr<'a, T, ReadWrite>
+impl<'a, T, A> VolatilePtr<'a, T, A>
 where
     T: ?Sized,
 {
@@ -220,7 +220,7 @@ where
     /// ## Example
     ///
     /// ```
-    /// use volatile::access::ReadOnly;
+    /// use volatile::access::{ReadOnly, WriteOnly};
     /// use volatile::VolatilePtr;
     ///
     /// let mut value: i16 = -4;
@@ -229,14 +229,24 @@ where
     /// let read_only = volatile.restrict::<ReadOnly>();
     /// assert_eq!(read_only.read(), -4);
     /// // read_only.write(10); // compile-time error
+    ///
+    /// let no_access = read_only.restrict::<WriteOnly>();
+    /// // no_access.read(); // compile-time error
+    /// // no_access.write(10); // compile-time error
     /// ```
-    pub fn restrict<A>(self) -> VolatilePtr<'a, T, A>
+    pub fn restrict<To>(self) -> VolatilePtr<'a, T, A::Restricted>
     where
-        A: Access,
+        A: RestrictAccess<To>,
     {
         unsafe { VolatilePtr::new_restricted(Default::default(), self.pointer) }
     }
+}
 
+/// Methods for restricting access.
+impl<'a, T> VolatilePtr<'a, T, ReadWrite>
+where
+    T: ?Sized,
+{
     /// Restricts access permissions to read-only.
     ///
     /// ## Example

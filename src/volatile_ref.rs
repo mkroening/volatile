@@ -1,5 +1,5 @@
 use crate::{
-    access::{Access, Copyable, ReadOnly, ReadWrite, WriteOnly},
+    access::{Access, Copyable, ReadOnly, ReadWrite, RestrictAccess, WriteOnly},
     volatile_ptr::VolatilePtr,
 };
 use core::{cmp::Ordering, fmt, hash, marker::PhantomData, ptr::NonNull};
@@ -139,9 +139,9 @@ where
     /// This method creates a `VolatileRef` tied to the lifetime of the `&VolatileRef` it is created from.
     /// This is useful for providing a volatile reference without moving the original `VolatileRef`.
     /// In comparison with creating a `&VolatileRef<'a, T>`, this avoids the additional indirection and lifetime.
-    pub fn borrow(&self) -> VolatileRef<'_, T, A::RestrictShared>
+    pub fn borrow(&self) -> VolatileRef<'_, T, A::Restricted>
     where
-        A: Access,
+        A: RestrictAccess<ReadOnly>,
     {
         unsafe { VolatileRef::new_restricted(Default::default(), self.pointer) }
     }
@@ -161,9 +161,9 @@ where
     /// Borrows this `VolatileRef` as a read-only [`VolatilePtr`].
     ///
     /// Use this method to do (partial) volatile reads of the referenced data.
-    pub fn as_ptr(&self) -> VolatilePtr<'_, T, A::RestrictShared>
+    pub fn as_ptr(&self) -> VolatilePtr<'_, T, A::Restricted>
     where
-        A: Access,
+        A: RestrictAccess<ReadOnly>,
     {
         unsafe { VolatilePtr::new_restricted(Default::default(), self.pointer) }
     }
@@ -194,7 +194,7 @@ where
 }
 
 /// Methods for restricting access.
-impl<'a, T> VolatileRef<'a, T, ReadWrite>
+impl<'a, T, A> VolatileRef<'a, T, A>
 where
     T: ?Sized,
 {
@@ -203,7 +203,7 @@ where
     /// ## Example
     ///
     /// ```
-    /// use volatile::access::ReadOnly;
+    /// use volatile::access::{ReadOnly, WriteOnly};
     /// use volatile::VolatileRef;
     ///
     /// let mut value: i16 = -4;
@@ -212,14 +212,24 @@ where
     /// let read_only = volatile.restrict::<ReadOnly>();
     /// assert_eq!(read_only.as_ptr().read(), -4);
     /// // read_only.as_ptr().write(10); // compile-time error
+    ///
+    /// let no_access = read_only.restrict::<WriteOnly>();
+    /// // no_access.read(); // compile-time error
+    /// // no_access.write(10); // compile-time error
     /// ```
-    pub fn restrict<A>(self) -> VolatileRef<'a, T, A>
+    pub fn restrict<To>(self) -> VolatileRef<'a, T, A::Restricted>
     where
-        A: Access,
+        A: RestrictAccess<To>,
     {
         unsafe { VolatileRef::new_restricted(Default::default(), self.pointer) }
     }
+}
 
+/// Methods for restricting access.
+impl<'a, T> VolatileRef<'a, T, ReadWrite>
+where
+    T: ?Sized,
+{
     /// Restricts access permissions to read-only.
     ///
     /// ## Example
