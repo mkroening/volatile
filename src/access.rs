@@ -1,43 +1,22 @@
 //! Marker types for limiting access.
 
-/// Private trait that is implemented for the types in this module.
-pub trait Access: Copy + Default {
-    /// Ensures that this trait cannot be implemented outside of this crate.
-    #[doc(hidden)]
-    fn _private() -> _Private {
-        _Private
-    }
-
+/// Sealed trait that is implemented for the types in this module.
+pub trait Access: Copy + Default + private::Sealed {
     /// Reduced access level to safely share the corresponding value.
     type RestrictShared: Access;
 }
 
 /// Helper trait that is implemented by [`ReadWrite`] and [`ReadOnly`].
-pub trait Readable: Copy + Default {
+pub trait Readable: Copy + Default + private::Sealed {
     /// Reduced access level to safely share the corresponding value.
     type RestrictShared: Readable + Access;
-
-    /// Ensures that this trait cannot be implemented outside of this crate.
-    fn _private() -> _Private {
-        _Private
-    }
 }
 
 /// Helper trait that is implemented by [`ReadWrite`] and [`WriteOnly`].
-pub trait Writable: Access {
-    /// Ensures that this trait cannot be implemented outside of this crate.
-    fn _private() -> _Private {
-        _Private
-    }
-}
+pub trait Writable: Access + private::Sealed {}
 
 /// Implemented for access types that permit copying of `VolatileRef`.
-pub trait Copyable {
-    /// Ensures that this trait cannot be implemented outside of this crate.
-    fn _private() -> _Private {
-        _Private
-    }
-}
+pub trait Copyable: private::Sealed {}
 
 impl<T> Access for T
 where
@@ -78,6 +57,11 @@ impl Access for NoAccess {
 }
 impl Copyable for NoAccess {}
 
-#[non_exhaustive]
-#[doc(hidden)]
-pub struct _Private;
+mod private {
+    pub trait Sealed {}
+
+    impl Sealed for super::ReadWrite {}
+    impl Sealed for super::ReadOnly {}
+    impl Sealed for super::WriteOnly {}
+    impl Sealed for super::NoAccess {}
+}
