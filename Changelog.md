@@ -1,5 +1,11 @@
 # Unreleased
 
+# 0.5.4 – 2024-04-26
+
+* fix(access): properly seal access traits by @mkroening in https://github.com/rust-osdev/volatile/pull/59
+* fix(macro): support `#[repr(align(N))]` in `#[derive(VolatileFieldAccess)]` macro by @mkroening in https://github.com/rust-osdev/volatile/pull/57
+* Fix warnings by @mkroening in https://github.com/rust-osdev/volatile/pull/56
+
 # 0.5.3 – 2024-04-21
 
 * Add `#[derive(VolatileFieldAccess)]` for easy, access-limited field-based access to structs by @mkroening in https://github.com/rust-osdev/volatile/pull/49
