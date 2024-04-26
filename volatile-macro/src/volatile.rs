@@ -84,7 +84,9 @@ fn parse_input(input: &ItemStruct) -> Result<ParsedInput> {
         }
 
         let sig = parse_quote! {
-            fn #ident(self) -> ::volatile::VolatilePtr<'a, #ty, #access>
+            fn #ident(self) -> ::volatile::VolatilePtr<'a, #ty, A::Restricted>
+            where
+                A: ::volatile::access::RestrictAccess<#access>
         };
         sigs.push(sig);
     }
@@ -112,7 +114,7 @@ fn emit_trait(
     parse_quote! {
         #(#attrs)*
         #[allow(non_camel_case_types)]
-        #vis trait #trait_ident <'a> {
+        #vis trait #trait_ident <'a, A> {
             #(
                 #(#method_attrs)*
                 #sigs;
@@ -133,9 +135,10 @@ fn emit_impl(
 
     parse_quote! {
         #[automatically_derived]
-        impl<'a> #trait_ident<'a> for ::volatile::VolatilePtr<'a, #struct_ident, ::volatile::access::ReadWrite> {
+        impl<'a, A> #trait_ident<'a, A> for ::volatile::VolatilePtr<'a, #struct_ident, A> {
             #(
-                #sigs {
+                #sigs,
+                {
                     ::volatile::map_field!(self.#fields).restrict()
                 }
             )*
@@ -183,24 +186,34 @@ mod tests {
             ///
             /// This is a wonderful struct.
             #[allow(non_camel_case_types)]
-            pub trait DeviceConfigVolatileFieldAccess<'a> {
-                fn feature_select(self) -> ::volatile::VolatilePtr<'a, u32, ::volatile::access::ReadWrite>;
+            pub trait DeviceConfigVolatileFieldAccess<'a, A> {
+                fn feature_select(self) -> ::volatile::VolatilePtr<'a, u32, A::Restricted>
+                where
+                    A: ::volatile::access::RestrictAccess<::volatile::access::ReadWrite>;
 
                 /// Feature.
                 ///
                 /// This is a good field.
-                fn feature(self) -> ::volatile::VolatilePtr<'a, u32, ReadOnly>;
+                fn feature(self) -> ::volatile::VolatilePtr<'a, u32, A::Restricted>
+                where
+                    A: ::volatile::access::RestrictAccess<ReadOnly>;
             }
         };
 
         let expected_impl = quote! {
             #[automatically_derived]
-            impl<'a> DeviceConfigVolatileFieldAccess<'a> for ::volatile::VolatilePtr<'a, DeviceConfig, ::volatile::access::ReadWrite> {
-                fn feature_select(self) -> ::volatile::VolatilePtr<'a, u32, ::volatile::access::ReadWrite> {
+            impl<'a, A> DeviceConfigVolatileFieldAccess<'a, A> for ::volatile::VolatilePtr<'a, DeviceConfig, A> {
+                fn feature_select(self) -> ::volatile::VolatilePtr<'a, u32, A::Restricted>
+                where
+                    A: ::volatile::access::RestrictAccess<::volatile::access::ReadWrite>,
+                {
                     ::volatile::map_field!(self.feature_select).restrict()
                 }
 
-                fn feature(self) -> ::volatile::VolatilePtr<'a, u32, ReadOnly> {
+                fn feature(self) -> ::volatile::VolatilePtr<'a, u32, A::Restricted>
+                where
+                    A: ::volatile::access::RestrictAccess<ReadOnly>,
+                {
                     ::volatile::map_field!(self.feature).restrict()
                 }
             }
@@ -230,12 +243,12 @@ mod tests {
 
         let expected_trait = quote! {
             #[allow(non_camel_case_types)]
-            pub trait DeviceConfigVolatileFieldAccess<'a> {}
+            pub trait DeviceConfigVolatileFieldAccess<'a, A> {}
         };
 
         let expected_impl = quote! {
             #[automatically_derived]
-            impl<'a> DeviceConfigVolatileFieldAccess<'a> for ::volatile::VolatilePtr<'a, DeviceConfig, ::volatile::access::ReadWrite> {}
+            impl<'a, A> DeviceConfigVolatileFieldAccess<'a, A> for ::volatile::VolatilePtr<'a, DeviceConfig, A> {}
         };
 
         assert_eq!(
