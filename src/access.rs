@@ -49,15 +49,15 @@ restrict_impl!(WriteOnly, NoAccess, NoAccess);
 pub trait Access: Copy + Default + private::Sealed {}
 
 /// Helper trait that is implemented by [`ReadWrite`] and [`ReadOnly`].
-pub trait Readable: Copy + Default + private::Sealed {}
+pub trait Readable: Access {}
 impl<A: RestrictAccess<ReadOnly, Restricted = ReadOnly>> Readable for A {}
 
 /// Helper trait that is implemented by [`ReadWrite`] and [`WriteOnly`].
-pub trait Writable: Access + private::Sealed {}
+pub trait Writable: Access {}
 impl<A: RestrictAccess<WriteOnly, Restricted = WriteOnly>> Writable for A {}
 
 /// Implemented for access types that permit copying of `VolatileRef`.
-pub trait Copyable: private::Sealed {}
+pub trait Copyable: Access {}
 impl<A: RestrictAccess<ReadOnly, Restricted = Self>> Copyable for A {}
 
 /// Zero-sized marker type for allowing both read and write access.
