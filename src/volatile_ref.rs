@@ -314,7 +314,7 @@ where
     T: ?Sized,
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(Ord::cmp(&self.pointer.as_ptr(), &other.pointer.as_ptr()))
+        Some(self.cmp(other))
     }
 }
 
@@ -323,6 +323,7 @@ where
     T: ?Sized,
 {
     fn cmp(&self, other: &Self) -> Ordering {
+        #[allow(ambiguous_wide_pointer_comparisons)]
         Ord::cmp(&self.pointer.as_ptr(), &other.pointer.as_ptr())
     }
 }
